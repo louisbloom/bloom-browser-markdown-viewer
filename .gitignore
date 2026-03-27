@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Signed extension artifacts
+web-ext-artifacts/
+
+# Editor / IDE
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AI tools
+.claude/
+.cursor/
+.copilot/
+.aider*
+.codeium/
+CLAUDE.md
+AGENTS.md
+COPILOT.md
+CURSOR.md
+
+# Environment / secrets
+.env
+.env.*

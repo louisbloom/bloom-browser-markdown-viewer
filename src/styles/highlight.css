@@ -1,0 +1,165 @@
+/* Syntax highlighting theme derived from Charm glamour dark.json chroma palette.
+   Maps glamour's chroma token colors to highlight.js CSS classes. */
+
+.hljs {
+  color: #c4c4c4;
+  background: #373737;
+}
+
+/* Comments */
+.hljs-comment,
+.hljs-quote {
+  color: #676767;
+}
+
+/* Keywords */
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #00aaff;
+}
+
+/* Reserved keywords / control flow */
+.hljs-literal,
+.hljs-selector-id {
+  color: #ff5fd2;
+}
+
+/* Keyword namespace / imports */
+.hljs-meta .hljs-keyword {
+  color: #ff5f87;
+}
+
+/* Types */
+.hljs-type,
+.hljs-built_in {
+  color: #6e6ed8;
+}
+
+/* Operators */
+.hljs-operator {
+  color: #ef8080;
+}
+
+/* Punctuation */
+.hljs-punctuation {
+  color: #e8e8a8;
+}
+
+/* Builtin names */
+.hljs-builtin-name {
+  color: #ff8ec7;
+}
+
+/* Tags (HTML/XML) */
+.hljs-tag,
+.hljs-name {
+  color: #b083ea;
+}
+
+/* Attributes */
+.hljs-attr,
+.hljs-attribute {
+  color: #7a7ae6;
+}
+
+/* Classes, underlined in glamour */
+.hljs-title.class_,
+.hljs-class .hljs-title {
+  color: #f1f1f1;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+/* Functions */
+.hljs-title,
+.hljs-title.function_ {
+  color: #00d787;
+}
+
+/* Decorators / annotations */
+.hljs-meta,
+.hljs-meta .hljs-string {
+  color: #ffff87;
+}
+
+/* Preprocessor */
+.hljs-comment.hljs-doctag {
+  color: #ff875f;
+}
+
+/* Numbers */
+.hljs-number {
+  color: #6eefc0;
+}
+
+/* Strings */
+.hljs-string {
+  color: #c69669;
+}
+
+/* String escapes */
+.hljs-char.escape_,
+.hljs-regexp {
+  color: #afffd7;
+}
+
+/* Diff inserted */
+.hljs-addition {
+  color: #00d787;
+}
+
+/* Diff deleted */
+.hljs-deletion {
+  color: #fd5b5b;
+}
+
+/* Strong / emphasis in markdown within code */
+.hljs-strong {
+  font-weight: bold;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+/* Subheading in diffs */
+.hljs-section {
+  color: #777;
+}
+
+/* Symbol / atom */
+.hljs-symbol {
+  color: #6eefc0;
+}
+
+/* Variable */
+.hljs-variable,
+.hljs-template-variable {
+  color: #c4c4c4;
+}
+
+/* Params */
+.hljs-params {
+  color: #c4c4c4;
+}
+
+/* Selector (CSS) */
+.hljs-selector-class {
+  color: #ff8ec7;
+}
+
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: #7a7ae6;
+}
+
+/* Property (CSS) */
+.hljs-property {
+  color: #00aaff;
+}
+
+/* Link / URL inside code */
+.hljs-link {
+  color: #ff8ec7;
+  text-decoration: underline;
+}

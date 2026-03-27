@@ -1,0 +1,25 @@
+{
+  "name": "bloom-markdown-viewer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Firefox extension that renders GFM markdown files in the browser",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "dev": "npm run build && npx web-ext run --source-dir dist/",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist/ web-ext-artifacts/"
+  },
+  "dependencies": {
+    "highlight.js": "^11.11.1",
+    "marked": "^17.0.0",
+    "marked-highlight": "^2.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "jsdom": "^29.0.1",
+    "vitest": "^3.1.0",
+    "web-ext": "^10.0.0"
+  }
+}
