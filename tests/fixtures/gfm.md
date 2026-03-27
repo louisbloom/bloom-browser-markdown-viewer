@@ -2,11 +2,11 @@
 
 ## Tables
 
-| Name | Value | Description |
-|------|-------|-------------|
-| alpha | 1 | First item |
-| beta | 2 | Second item |
-| gamma | 3 | Third item |
+| Name  | Value | Description |
+| ----- | ----- | ----------- |
+| alpha | 1     | First item  |
+| beta  | 2     | Second item |
+| gamma | 3     | Third item  |
 
 ## Task Lists
 

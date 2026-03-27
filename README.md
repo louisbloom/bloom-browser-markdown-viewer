@@ -79,6 +79,7 @@ After building (and optionally signing):
 ```
 
 The installer finds your Firefox profile and:
+
 - If a signed `.xpi` exists in `web-ext-artifacts/`, installs that (works on all Firefox editions)
 - Otherwise, creates a proxy file pointing to `dist/` (only works on Firefox Developer Edition, Nightly, or ESR with `xpinstall.signatures.required` set to `false` in `about:config`)
 

@@ -4,7 +4,7 @@ This is a basic markdown document.
 
 ## Second Heading
 
-A paragraph with **bold**, *italic*, and a [link](https://example.com).
+A paragraph with **bold**, _italic_, and a [link](https://example.com).
 
 ### Third Heading
 

@@ -10,8 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "clean": "rm -rf dist/ web-ext-artifacts/",
-    "format": "prettier --write 'src/**/*.{js,css}' 'tests/**/*.js' '*.mjs'",
-    "format:check": "prettier --check 'src/**/*.{js,css}' 'tests/**/*.js' '*.mjs'"
+    "format": "prettier --write 'src/**/*.{js,css}' 'tests/**/*.js' '*.mjs' '*.md' 'tests/**/*.md'",
+    "format:check": "prettier --check 'src/**/*.{js,css}' 'tests/**/*.js' '*.mjs' '*.md' 'tests/**/*.md'"
   },
   "dependencies": {
     "highlight.js": "^11.11.1",

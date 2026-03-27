@@ -31,7 +31,7 @@ for arg in "$@"; do
 done
 
 if [ "$ACTION" = "format" ]; then
-    npx prettier --write 'src/**/*.{js,css}' 'tests/**/*.js' '*.mjs'
+    npx prettier --write 'src/**/*.{js,css}' 'tests/**/*.js' '*.mjs' '*.md' 'tests/**/*.md'
     exit 0
 fi
 
