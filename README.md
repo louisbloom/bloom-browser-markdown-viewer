@@ -10,6 +10,7 @@ All markdown processing happens locally. No data ever leaves your machine.
 - **Syntax highlighting**: 37 languages via highlight.js
 - **Dark theme**: pitch black background, Charm glamour color palette
 - **Local-only**: all processing bundled at build time, zero network requests
+- **Line break toggle**: optional mode where single newlines render as `<br>` (persisted across pages)
 - **System fonts**: no external font loading
 
 ## Prerequisites (build only)
