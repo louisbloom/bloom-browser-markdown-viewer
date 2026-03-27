@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Project Bloom Markdown Viewer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Renders GFM markdown files in the browser with a dark, Charm-inspired theme",
   "browser_specific_settings": {
     "gecko": {
