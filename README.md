@@ -12,11 +12,12 @@ All markdown processing happens locally. No data ever leaves your machine.
 - **Local-only**: all processing bundled at build time, zero network requests
 - **System fonts**: no external font loading
 
-## Prerequisites
+## Prerequisites (build only)
 
 - Node.js (>= 18)
 - npm
-- Firefox
+
+The built extension has no runtime dependencies outside Firefox.
 
 ## Build
 
