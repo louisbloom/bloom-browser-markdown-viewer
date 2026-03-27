@@ -9,7 +9,9 @@
     "dev": "npm run build && npx web-ext run --source-dir dist/",
     "test": "vitest run",
     "test:watch": "vitest",
-    "clean": "rm -rf dist/ web-ext-artifacts/"
+    "clean": "rm -rf dist/ web-ext-artifacts/",
+    "format": "prettier --write 'src/**/*.{js,css}' 'tests/**/*.js' '*.mjs'",
+    "format:check": "prettier --check 'src/**/*.{js,css}' 'tests/**/*.js' '*.mjs'"
   },
   "dependencies": {
     "highlight.js": "^11.11.1",
@@ -19,6 +21,7 @@
   "devDependencies": {
     "esbuild": "^0.25.0",
     "jsdom": "^29.0.1",
+    "prettier": "^3.8.1",
     "vitest": "^3.1.0",
     "web-ext": "^10.0.0"
   }

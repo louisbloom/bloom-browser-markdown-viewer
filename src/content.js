@@ -27,7 +27,7 @@ export function isRawTextPage(doc) {
 /**
  * Configure marked with GFM and highlight.js, then parse markdown to HTML.
  */
-export function parseMarkdown(text) {
+export function parseMarkdown(text, { breaks = false } = {}) {
   const instance = new Marked(
     markedHighlight({
       langPrefix: 'hljs language-',
@@ -38,7 +38,7 @@ export function parseMarkdown(text) {
         return hljs.highlightAuto(code).value;
       },
     }),
-    { gfm: true, breaks: false }
+    { gfm: true, breaks }
   );
 
   return instance.parse(text);
@@ -76,14 +76,61 @@ export function renderPage(doc, html) {
 }
 
 /**
+ * Create a toggle button for the breaks setting.
+ */
+export function createBreaksToggle(doc, enabled, onToggle) {
+  const btn = doc.createElement('button');
+  btn.className = 'bloom-breaks-toggle';
+  btn.textContent = enabled ? 'Breaks: On' : 'Breaks: Off';
+  btn.setAttribute('aria-pressed', String(enabled));
+  btn.addEventListener('click', () => {
+    const newValue = !enabled;
+    onToggle(newValue);
+  });
+  return btn;
+}
+
+async function loadBreaksSetting() {
+  try {
+    const result = await browser.storage.local.get('bloom_breaks_enabled');
+    return result.bloom_breaks_enabled === true;
+  } catch {
+    return false;
+  }
+}
+
+async function saveBreaksSetting(enabled) {
+  try {
+    await browser.storage.local.set({ bloom_breaks_enabled: enabled });
+  } catch {
+    // Silently fail — toggle still works for the current page
+  }
+}
+
+/**
  * Entry point: detect raw text markdown, parse it, and render.
  */
-export function main(doc) {
+export async function main(doc) {
   const rawText = isRawTextPage(doc);
   if (!rawText) return false;
 
-  const html = parseMarkdown(rawText);
-  renderPage(doc, html);
+  let breaksEnabled = await loadBreaksSetting();
+
+  function render(breaks) {
+    const scrollY = doc.defaultView?.scrollY || 0;
+    const html = parseMarkdown(rawText, { breaks });
+    renderPage(doc, html);
+
+    const toggle = createBreaksToggle(doc, breaks, (newValue) => {
+      breaksEnabled = newValue;
+      saveBreaksSetting(newValue);
+      render(newValue);
+    });
+    doc.body.appendChild(toggle);
+    if (scrollY) doc.defaultView?.scrollTo(0, scrollY);
+  }
+
+  render(breaksEnabled);
   return true;
 }
 

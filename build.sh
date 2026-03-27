@@ -3,12 +3,13 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 usage() {
-    echo "Usage: $0 [--sign] [--dev] [--test]"
+    echo "Usage: $0 [--sign] [--dev] [--test] [--format]"
     echo ""
     echo "  (no args)   Build the extension to dist/"
     echo "  --sign      Build + sign via AMO API (produces .xpi in web-ext-artifacts/)"
     echo "  --dev       Build + launch Firefox with the extension loaded"
     echo "  --test      Build + run tests"
+    echo "  --format    Format source files with Prettier"
     exit 1
 }
 
@@ -23,10 +24,16 @@ for arg in "$@"; do
         --sign) ACTION="sign" ;;
         --dev)  ACTION="dev" ;;
         --test) ACTION="test" ;;
+        --format) ACTION="format" ;;
         -h|--help) usage ;;
         *) echo "Unknown option: $arg"; usage ;;
     esac
 done
+
+if [ "$ACTION" = "format" ]; then
+    npx prettier --write 'src/**/*.{js,css}' 'tests/**/*.js' '*.mjs'
+    exit 0
+fi
 
 do_build
 

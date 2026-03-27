@@ -1,7 +1,31 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
-import { isRawTextPage, parseMarkdown, renderPage, main } from '../src/content.js';
+import {
+  isRawTextPage,
+  parseMarkdown,
+  renderPage,
+  createBreaksToggle,
+  main,
+} from '../src/content.js';
+
+// Mock browser.storage.local for tests
+const storageData = {};
+globalThis.browser = {
+  storage: {
+    local: {
+      async get(key) {
+        if (typeof key === 'string') {
+          return { [key]: storageData[key] };
+        }
+        return {};
+      },
+      async set(items) {
+        Object.assign(storageData, items);
+      },
+    },
+  },
+};
 
 function fixture(name) {
   return readFileSync(resolve(__dirname, 'fixtures', name), 'utf8');
@@ -161,6 +185,18 @@ describe('parseMarkdown', () => {
     expect(html).toContain('<hr');
   });
 
+  it('does not convert newlines to <br> by default', () => {
+    const md = 'Line one\nLine two';
+    const html = parseMarkdown(md);
+    expect(html).not.toContain('<br');
+  });
+
+  it('converts newlines to <br> when breaks: true', () => {
+    const md = 'Line one\nLine two';
+    const html = parseMarkdown(md, { breaks: true });
+    expect(html).toContain('<br');
+  });
+
   it('autolinks bare URLs', () => {
     const md = 'Visit https://example.com for info.';
     const html = parseMarkdown(md);
@@ -232,17 +268,49 @@ describe('renderPage', () => {
   });
 });
 
+// ---------- createBreaksToggle ----------
+
+describe('createBreaksToggle', () => {
+  it('creates a button with class bloom-breaks-toggle', () => {
+    const btn = createBreaksToggle(document, false, () => {});
+    expect(btn.tagName).toBe('BUTTON');
+    expect(btn.classList.contains('bloom-breaks-toggle')).toBe(true);
+  });
+
+  it('shows Off state when breaks is false', () => {
+    const btn = createBreaksToggle(document, false, () => {});
+    expect(btn.getAttribute('aria-pressed')).toBe('false');
+    expect(btn.textContent).toContain('Off');
+  });
+
+  it('shows On state when breaks is true', () => {
+    const btn = createBreaksToggle(document, true, () => {});
+    expect(btn.getAttribute('aria-pressed')).toBe('true');
+    expect(btn.textContent).toContain('On');
+  });
+
+  it('calls onToggle with new value when clicked', () => {
+    let received = null;
+    const btn = createBreaksToggle(document, false, (val) => {
+      received = val;
+    });
+    btn.click();
+    expect(received).toBe(true);
+  });
+});
+
 // ---------- main (integration) ----------
 
 describe('main', () => {
   beforeEach(() => {
     document.head.innerHTML = '';
     document.body.innerHTML = '';
+    Object.keys(storageData).forEach((k) => delete storageData[k]);
   });
 
-  it('detects raw text, parses, and renders markdown', () => {
+  it('detects raw text, parses, and renders markdown', async () => {
     const doc = makeRawTextDocument(fixture('basic.md'));
-    const result = main(doc);
+    const result = await main(doc);
     expect(result).toBe(true);
 
     const article = doc.querySelector('article.markdown-body');
@@ -251,16 +319,18 @@ describe('main', () => {
     expect(article.innerHTML).toContain('Hello World');
   });
 
-  it('does not modify non-raw-text pages', () => {
-    const doc = makeHtmlDocument('<div>Already rendered</div><p>More content</p>');
-    const result = main(doc);
+  it('does not modify non-raw-text pages', async () => {
+    const doc = makeHtmlDocument(
+      '<div>Already rendered</div><p>More content</p>'
+    );
+    const result = await main(doc);
     expect(result).toBe(false);
     expect(doc.body.innerHTML).toContain('Already rendered');
   });
 
-  it('renders GFM features end-to-end', () => {
+  it('renders GFM features end-to-end', async () => {
     const doc = makeRawTextDocument(fixture('gfm.md'));
-    main(doc);
+    await main(doc);
 
     const html = doc.querySelector('article.markdown-body').innerHTML;
     expect(html).toContain('<table>');
@@ -268,23 +338,41 @@ describe('main', () => {
     expect(html).toContain('<del>');
   });
 
-  it('renders code blocks with syntax highlighting end-to-end', () => {
+  it('renders code blocks with syntax highlighting end-to-end', async () => {
     const doc = makeRawTextDocument(fixture('code-blocks.md'));
-    main(doc);
+    await main(doc);
 
     const html = doc.querySelector('article.markdown-body').innerHTML;
     expect(html).toContain('hljs');
     expect(html).toContain('language-javascript');
   });
 
-  it('handles edge case: no headings', () => {
+  it('handles edge case: no headings', async () => {
     const doc = makeRawTextDocument(fixture('edge-cases.md'));
-    const result = main(doc);
+    const result = await main(doc);
     expect(result).toBe(true);
 
     const article = doc.querySelector('article.markdown-body');
     expect(article).not.toBeNull();
     expect(article.innerHTML).toContain('No headings');
+  });
+
+  it('renders toggle button on the page', async () => {
+    const doc = makeRawTextDocument(fixture('basic.md'));
+    await main(doc);
+    const toggle = doc.querySelector('.bloom-breaks-toggle');
+    expect(toggle).not.toBeNull();
+    expect(toggle.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('re-renders with breaks when toggle is clicked', async () => {
+    const doc = makeRawTextDocument('Line one\nLine two');
+    await main(doc);
+    const toggle = doc.querySelector('.bloom-breaks-toggle');
+    toggle.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const article = doc.querySelector('article.markdown-body');
+    expect(article.innerHTML).toContain('<br');
   });
 });
 
@@ -301,7 +389,9 @@ describe('build output', () => {
     expect(manifest.manifest_version).toBe(2);
     expect(manifest.name).toBeTruthy();
     expect(manifest.version).toBeTruthy();
-    expect(manifest.browser_specific_settings.gecko.id).toBe('bloom-markdown-viewer@firefox.local');
+    expect(manifest.browser_specific_settings.gecko.id).toBe(
+      'bloom-markdown-viewer@firefox.local'
+    );
     expect(manifest.content_scripts).toHaveLength(1);
   });
 
