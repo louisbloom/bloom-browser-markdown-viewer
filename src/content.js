@@ -24,10 +24,36 @@ export function isRawTextPage(doc) {
   return text;
 }
 
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/<[^>]+>/g, '')
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 /**
  * Configure marked with GFM and highlight.js, then parse markdown to HTML.
  */
 export function parseMarkdown(text, { breaks = false } = {}) {
+  const slugCounts = {};
+  const headingExtension = {
+    renderer: {
+      heading({ text, depth }) {
+        let slug = slugify(text);
+        if (slugCounts[slug] !== undefined) {
+          slugCounts[slug]++;
+          slug = `${slug}-${slugCounts[slug]}`;
+        } else {
+          slugCounts[slug] = 0;
+        }
+        return `<h${depth} id="${slug}">${text}</h${depth}>\n`;
+      },
+    },
+  };
+
   const mermaidExtension = {
     renderer: {
       code({ text, lang }) {
@@ -56,6 +82,7 @@ export function parseMarkdown(text, { breaks = false } = {}) {
       },
     }),
     mermaidExtension,
+    headingExtension,
     { gfm: true, breaks }
   );
 

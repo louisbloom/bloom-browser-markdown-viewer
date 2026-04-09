@@ -223,6 +223,45 @@ describe('parseMarkdown', () => {
     expect(html).toContain('hljs');
   });
 
+  it('generates id attributes on headings', () => {
+    const html = parseMarkdown('# Hello\n## World');
+    expect(html).toContain('<h1 id="hello">');
+    expect(html).toContain('<h2 id="world">');
+  });
+
+  it('slugifies multi-word headings', () => {
+    const html = parseMarkdown('## Axe Edges');
+    expect(html).toContain('id="axe-edges"');
+  });
+
+  it('removes special characters from heading slugs', () => {
+    const html = parseMarkdown('## Staff/Spear Edges\n## Whip/Flail Edges');
+    expect(html).toContain('id="staffspear-edges"');
+    expect(html).toContain('id="whipflail-edges"');
+  });
+
+  it('deduplicates identical heading slugs', () => {
+    const html = parseMarkdown('## Foo\n## Foo\n## Foo');
+    expect(html).toContain('id="foo"');
+    expect(html).toContain('id="foo-1"');
+    expect(html).toContain('id="foo-2"');
+  });
+
+  it('generates slugs matching TOC anchor links', () => {
+    const md = [
+      '- [Axe Edges](#axe-edges)',
+      '- [Hand to Hand Edges](#hand-to-hand-edges)',
+      '',
+      '## Axe Edges',
+      '## Hand to Hand Edges',
+    ].join('\n');
+    const html = parseMarkdown(md);
+    expect(html).toContain('href="#axe-edges"');
+    expect(html).toContain('id="axe-edges"');
+    expect(html).toContain('href="#hand-to-hand-edges"');
+    expect(html).toContain('id="hand-to-hand-edges"');
+  });
+
   it('autolinks bare URLs', () => {
     const md = 'Visit https://example.com for info.';
     const html = parseMarkdown(md);
