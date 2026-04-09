@@ -28,16 +28,34 @@ export function isRawTextPage(doc) {
  * Configure marked with GFM and highlight.js, then parse markdown to HTML.
  */
 export function parseMarkdown(text, { breaks = false } = {}) {
+  const mermaidExtension = {
+    renderer: {
+      code({ text, lang }) {
+        if (lang === 'mermaid') {
+          const escaped = text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+          return `<pre class="mermaid">${escaped}</pre>`;
+        }
+        return false;
+      },
+    },
+  };
+
   const instance = new Marked(
     markedHighlight({
       langPrefix: 'hljs language-',
       highlight(code, lang) {
+        if (lang === 'mermaid') return code;
         if (lang && hljs.getLanguage(lang)) {
           return hljs.highlight(code, { language: lang }).value;
         }
         return hljs.highlightAuto(code).value;
       },
     }),
+    mermaidExtension,
     { gfm: true, breaks }
   );
 
@@ -79,15 +97,36 @@ export function renderPage(doc, html) {
  * Create a toggle button for the breaks setting.
  */
 export function createBreaksToggle(doc, enabled, onToggle) {
-  const btn = doc.createElement('button');
+  const btn = doc.createElement('span');
   btn.className = 'bloom-breaks-toggle';
+  btn.setAttribute('role', 'button');
+  btn.setAttribute('tabindex', '0');
   btn.textContent = enabled ? 'Breaks: On' : 'Breaks: Off';
   btn.setAttribute('aria-pressed', String(enabled));
   btn.addEventListener('click', () => {
     const newValue = !enabled;
     onToggle(newValue);
   });
+  btn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      btn.click();
+    }
+  });
   return btn;
+}
+
+function injectMermaid(doc) {
+  if (!doc.querySelector('pre.mermaid')) return;
+
+  if (!doc.getElementById('bloom-mermaid-init')) {
+    const script = doc.createElement('script');
+    script.id = 'bloom-mermaid-init';
+    script.type = 'module';
+    script.src = browser.runtime.getURL('vendor/mermaid-init.mjs');
+    doc.head.appendChild(script);
+  }
+  doc.dispatchEvent(new CustomEvent('bloom-render-mermaid'));
 }
 
 async function loadBreaksSetting() {
@@ -120,6 +159,7 @@ export async function main(doc) {
     const scrollY = doc.defaultView?.scrollY || 0;
     const html = parseMarkdown(rawText, { breaks });
     renderPage(doc, html);
+    injectMermaid(doc);
 
     const toggle = createBreaksToggle(doc, breaks, (newValue) => {
       breaksEnabled = newValue;

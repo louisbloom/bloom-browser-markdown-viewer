@@ -7,6 +7,7 @@ All markdown processing happens locally. No data ever leaves your machine.
 ## Features
 
 - **GFM support**: tables, task lists, strikethrough, autolinks, fenced code blocks
+- **Mermaid diagrams**: flowcharts, sequence diagrams, xycharts, and more rendered as SVGs
 - **Syntax highlighting**: 37 languages via highlight.js
 - **Dark theme**: pitch black background, Charm glamour color palette
 - **Local-only**: all processing bundled at build time, zero network requests
@@ -110,6 +111,7 @@ The extension runs a content script on pages matching `*.md` and `*.markdown` UR
 1. Detects the raw text content
 2. Parses it as GitHub Flavored Markdown using [marked](https://marked.js.org/)
 3. Applies syntax highlighting to code blocks using [highlight.js](https://highlightjs.org/)
-4. Replaces the page with styled, rendered HTML
+4. Renders mermaid diagram blocks as SVGs using [mermaid](https://mermaid.js.org/)
+5. Replaces the page with styled, rendered HTML
 
 Pages that are already HTML (e.g., GitHub's rendered markdown view) are left untouched.

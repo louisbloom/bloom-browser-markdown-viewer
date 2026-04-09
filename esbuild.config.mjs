@@ -28,4 +28,17 @@ writeFileSync('dist/content.bundle.css', result.code);
 cpSync('src/manifest.json', 'dist/manifest.json');
 cpSync('src/icons', 'dist/icons', { recursive: true });
 
+// 4. Copy mermaid vendor files (pre-built ESM, minified)
+mkdirSync('dist/vendor/mermaid/chunks/mermaid.esm.min', { recursive: true });
+cpSync('src/mermaid-init.mjs', 'dist/vendor/mermaid-init.mjs');
+cpSync(
+  'node_modules/mermaid/dist/mermaid.esm.min.mjs',
+  'dist/vendor/mermaid/mermaid.esm.min.mjs'
+);
+cpSync(
+  'node_modules/mermaid/dist/chunks/mermaid.esm.min',
+  'dist/vendor/mermaid/chunks/mermaid.esm.min',
+  { recursive: true }
+);
+
 console.log('Build complete.');

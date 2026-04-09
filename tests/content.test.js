@@ -197,6 +197,32 @@ describe('parseMarkdown', () => {
     expect(html).toContain('<br');
   });
 
+  it('renders mermaid code blocks as pre.mermaid without highlight.js', () => {
+    const md = '```mermaid\ngraph TD;\n    A-->B;\n```';
+    const html = parseMarkdown(md);
+    expect(html).toContain('<pre class="mermaid">');
+    expect(html).not.toContain('language-mermaid');
+    expect(html).not.toContain('hljs');
+    expect(html).toContain('graph TD;');
+  });
+
+  it('HTML-escapes mermaid content for safe innerHTML insertion', () => {
+    const md =
+      '```mermaid\ngraph TD;\n    A["<script>alert(1)</script>"]-->B;\n```';
+    const html = parseMarkdown(md);
+    expect(html).toContain('&lt;script&gt;');
+    expect(html).not.toContain('<script>');
+  });
+
+  it('still applies highlight.js to non-mermaid code blocks alongside mermaid', () => {
+    const md =
+      '```mermaid\ngraph TD;\n    A-->B;\n```\n\n```javascript\nconst x = 1;\n```';
+    const html = parseMarkdown(md);
+    expect(html).toContain('<pre class="mermaid">');
+    expect(html).toContain('language-javascript');
+    expect(html).toContain('hljs');
+  });
+
   it('autolinks bare URLs', () => {
     const md = 'Visit https://example.com for info.';
     const html = parseMarkdown(md);
@@ -271,9 +297,9 @@ describe('renderPage', () => {
 // ---------- createBreaksToggle ----------
 
 describe('createBreaksToggle', () => {
-  it('creates a button with class bloom-breaks-toggle', () => {
+  it('creates a toggle with class bloom-breaks-toggle', () => {
     const btn = createBreaksToggle(document, false, () => {});
-    expect(btn.tagName).toBe('BUTTON');
+    expect(btn.tagName).toBe('SPAN');
     expect(btn.classList.contains('bloom-breaks-toggle')).toBe(true);
   });
 
