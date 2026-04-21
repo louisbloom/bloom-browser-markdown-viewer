@@ -3,13 +3,13 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 usage() {
-    echo "Usage: $0 [--sign] [--dev] [--test] [--format]"
+    echo "Usage: $0 [--sign] [--dev [URL]] [--test] [--format]"
     echo ""
-    echo "  (no args)   Build the extension to dist/"
-    echo "  --sign      Build + sign via AMO API (produces .xpi in web-ext-artifacts/)"
-    echo "  --dev       Build + launch Firefox with the extension loaded"
-    echo "  --test      Build + run tests"
-    echo "  --format    Format source files with Prettier"
+    echo "  (no args)    Build the extension to dist/"
+    echo "  --sign       Build + sign via AMO API (produces .xpi in web-ext-artifacts/)"
+    echo "  --dev [URL]  Build + launch Firefox with the extension loaded; optional start URL"
+    echo "  --test       Build + run tests"
+    echo "  --format     Format source files with Prettier"
     exit 1
 }
 
@@ -19,6 +19,7 @@ do_build() {
 }
 
 ACTION=""
+DEV_URL=""
 for arg in "$@"; do
     case "$arg" in
         --sign) ACTION="sign" ;;
@@ -26,7 +27,13 @@ for arg in "$@"; do
         --test) ACTION="test" ;;
         --format) ACTION="format" ;;
         -h|--help) usage ;;
-        *) echo "Unknown option: $arg"; usage ;;
+        *)
+            if [ "$ACTION" = "dev" ] && [ -z "$DEV_URL" ]; then
+                DEV_URL="$arg"
+            else
+                echo "Unknown option: $arg"; usage
+            fi
+            ;;
     esac
 done
 
@@ -60,7 +67,11 @@ case "$ACTION" in
         echo "Run ./install.sh to install it."
         ;;
     dev)
-        npx web-ext run --source-dir dist/
+        if [ -n "$DEV_URL" ]; then
+            npx web-ext run --source-dir dist/ --start-url "$DEV_URL"
+        else
+            npx web-ext run --source-dir dist/
+        fi
         ;;
     test)
         npx vitest run

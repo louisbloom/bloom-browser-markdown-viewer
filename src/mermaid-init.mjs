@@ -14,11 +14,17 @@ mermaid.initialize({
     tertiaryColor: '#111',
     fontFamily:
       '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif',
-    fontSize: '14px',
+    fontSize: '12px',
   },
   xyChart: {
-    xAxis: { labelPadding: 25, titlePadding: 10 },
-    yAxis: { labelPadding: 10, titlePadding: 40 },
+    titleFontSize: 14,
+    xAxis: { labelFontSize: 12, titleFontSize: 12, labelPadding: 20 },
+    yAxis: {
+      labelFontSize: 12,
+      titleFontSize: 12,
+      labelPadding: 10,
+      titlePadding: 15,
+    },
   },
   securityLevel: 'strict',
   logLevel: 'error',

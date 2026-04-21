@@ -317,12 +317,16 @@ body {
 pre.mermaid {
   background: transparent;
   border: none;
-  padding: 16px 0;
+  padding: 16px 80px 16px 24px;
   text-align: center;
+  overflow: visible;
   will-change: transform;
 }
 
 pre.mermaid svg {
-  max-width: 100%;
+  width: 100% !important;
+  max-width: 100% !important;
   height: auto;
+  display: block;
+  margin: 0 auto;
 }
