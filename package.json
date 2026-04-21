@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Firefox extension that renders GFM markdown files in the browser",
+  "license": "MPL-2.0",
   "scripts": {
     "build": "node esbuild.config.mjs",
     "dev": "npm run build && npx web-ext run --source-dir dist/",
